@@ -10,7 +10,7 @@
   npm install # Make sure there is no package resolve
   ```
 - ```bash
-  npx prisma geenrate # 🔄 This should be initiated after every schema changes for local typing update
+  npx prisma generate # 🔄 This should be initiated after every schema changes for local typing update
   ```
 - ```bash
   npm run dev
