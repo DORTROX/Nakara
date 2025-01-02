@@ -5,6 +5,7 @@ import morgan from "morgan";
 import path from "path";
 import { createStream } from "rotating-file-stream";
 import MainRouter from "@/routes";
+import { authenticateToken } from "@/middlewares/middleware";
 
 const app: Application = express();
 const accessLogStream = createStream("access.log", {
@@ -19,6 +20,7 @@ const corsOption = {
 app.use(cors());
 app.use(express.json());
 app.use(morgan("combined", { stream: accessLogStream }));
+app.use(authenticateToken)
 
 app.use("/api", MainRouter);
 
