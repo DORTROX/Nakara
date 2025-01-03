@@ -20,3 +20,8 @@ interface MetadataContent {
   Theme: string;
   Style: string;
 }
+
+interface StoryContent {
+  content: string;
+  title: string;
+}

@@ -13,20 +13,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
   username      String
-  walletAddress String   @unique
+  walletAddress String     @unique
   metadata      Metadata[]
+  Comment       Comment[]
 }
 
 model Metadata {
-  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
   characterName     String
   profile           String
   theme             String
   storytellingStyle String
-  ownerId           String @db.ObjectId
-  owner             User   @relation(fields: [ownerId], references: [id])
+  ownerId           String    @db.ObjectId
+  owner             User      @relation(fields: [ownerId], references: [id])
+  chapters          Chapter[]
+}
+
+model Chapter {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  content    String
+  metadataId String   @db.ObjectId
+  metadata   Metadata @relation(fields: [metadataId], references: [id])
+  bet        Bet?
+  createdAt    DateTime @default(now())
+}
+
+model Bet {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  chapterId String    @unique @db.ObjectId
+  chapter   Chapter   @relation(fields: [chapterId], references: [id])
+  ques      String
+  answer    String
+  amount    Int
+  comments  Comment[]
+}
+
+model Comment {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  betId   String   @db.ObjectId
+  bet     Bet      @relation(fields: [betId], references: [id])
+  content String
+  author  String   @db.ObjectId
+  date    DateTime @default(now())
+  owner   User     @relation(fields: [author], references: [id])
 }
