@@ -32,6 +32,7 @@
     "morgan": "^1.10.0",
     "openai": "^4.77.0",
     "rotating-file-stream": "^3.2.5",
+    "thirdweb": "^5.80.0",
     "tsconfig-paths": "^4.2.0"
   }
 }

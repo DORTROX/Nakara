@@ -68,94 +68,98 @@ export const generateChapter = async (
     const metadata = await prisma.metadata.findUnique({
       where: { id: id },
     });
+    res.status(200).json({ message: metadata});
 
-    if (!metadata) {
-      res.status(404).json({ message: "Metadata not found" });
-      return;
-    }
-    const user = await prisma.user.findUnique({
-      where: { walletAddress: walletAddress },
-    });
+    // if (!metadata) {
+    //   res.status(404).json({ message: "Metadata not found" });
+    //   return;
+    // }
+    // const user = await prisma.user.findUnique({
+    //   where: { walletAddress: walletAddress },
+    // });
 
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
+    // if (!user) {
+    //   res.status(404).json({ message: "User not found" });
+    //   return;
+    // }
 
-    // Check if the user is the owner of the metadata
-    if (metadata.ownerId !== user.id) {
-      res.status(403).json({
-        message: "Unauthorized: You do not have access to this metadata",
-      });
-      return;
-    }
+    // // Check if the user is the owner of the metadata
+    // if (metadata.ownerId !== user.id) {
+    //   res.status(403).json({
+    //     message: "Unauthorized: You do not have access to this metadata",
+    //   });
+    //   return;
+    // }
 
-    const previousChapters = await prisma.chapter.findMany({
-      where: { metadataId: id },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 1,
-      select: {
-        title: true,
-        content: true,
-      },
-    });
-    const referenceChapters = await prisma.chapter.findMany({
-      where: { id: { in: chapterIds }, metadataId: id },
-      select: {
-        title: true,
-        content: true,
-      },
-    });
+    // const previousChapters = await prisma.chapter.findMany({
+    //   where: { metadataId: id },
+    //   orderBy: {
+    //     createdAt: "desc",
+    //   },
+    //   take: 1,
+    //   select: {
+    //     title: true,
+    //     content: true,
+    //   },
+    // });
+    // const referenceChapters = await prisma.chapter.findMany({
+    //   where: { id: { in: chapterIds }, metadataId: id },
+    //   select: {
+    //     title: true,
+    //     content: true,
+    //   },
+    // });
 
-    console.log(previousChapters, referenceChapters);
+    // console.log(previousChapters, referenceChapters);
 
-    // Fetch the user using the wallet address
+    // // Fetch the user using the wallet address
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content:
-            'You are an AI language model tasked with writing the next chapter of a story.\n\n**Story Metadata:**\n- **Title:** {Story Title}\n- **Theme:** {Story Theme}\n- **Storytelling Style:** {Narrative Style}\n- **Temperature:** {Temperature Value}\n\n**Previous Chapters:**\n{Provide summaries or full texts of previous chapters here, ensuring the model has sufficient context.}\n\n**Reference Materials:**\n{Include any additional reference chapters or materials that are relevant to the story\'s development.}\n\n**User Prompt for the New Chapter:**\n{Provide specific guidance or ideas for the upcoming chapter, such as desired plot developments, character interactions, or themes to explore.}\n\n**Instructions:**\nBased on the information provided above, write the next chapter of the story, ensuring consistency with the existing narrative, theme, storytelling style, and the temperature setting.\n- If the Temperature is 0, rely solely on the existing story context and reference materials. Ignore the User Prompt but creatively adapt and incorporate the references to make the content non-guessable while maintaining coherence.\n- If the Temperature is 1, fully incorporate the User Prompt into the new chapter.\n- For Temperature values between 0 and 1, adjust the influence of the User Prompt proportionally while ensuring the references are creatively integrated and remain consistent with the story.\n- Regardless of the Temperature value, avoid straying from the established narrative, theme, and storytelling style.\n- It should be in 250 words max.\n**Output Format:**\nReturn the output in JSON format with the following structure:\n{\n  "title": "{Chapter Title}",\n  "content": "{Chapter Content}"\n}',
-        },
-        {
-          role: "user",
-          content: `\`\`\`json\n{
-          "Story Theme": "${metadata.theme}",
-          "Narrative Style": "${metadata.storytellingStyle}",
-          "Temperature Value": ${random},
-          "Previous Chapters": ${previousChapters},
-          "Reference Materials": ${referenceChapters},
-          "User Prompt for the New Chapter": ${prompt}
-          }\`\`\``,
-        },
-      ],
-      response_format: {
-        type: "json_object",
-      },
-      temperature: 0.8,
-      max_completion_tokens: 4096,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-    });
+    // const completion = await openai.chat.completions.create({
+    //   model: "gpt-4o",
+    //   messages: [
+    //     {
+    //       role: "system",
+    //       content:
+    //         'You are an AI language model tasked with writing the next chapter of a story.\n\n**Story Metadata:**\n- **Title:** {Story Title}\n- **Theme:** {Story Theme}\n- **Storytelling Style:** {Narrative Style}\n- **Temperature:** {Temperature Value}\n\n**Previous Chapters:**\n{Provide summaries or full texts of previous chapters here, ensuring the model has sufficient context.}\n\n**Reference Materials:**\n{Include any additional reference chapters or materials that are relevant to the story\'s development.}\n\n**User Prompt for the New Chapter:**\n{Provide specific guidance or ideas for the upcoming chapter, such as desired plot developments, character interactions, or themes to explore.}\n\n**Instructions:**\nBased on the information provided above, write the next chapter of the story, ensuring consistency with the existing narrative, theme, storytelling style, and the temperature setting.\n- If the Temperature is 0, rely solely on the existing story context and reference materials. Ignore the User Prompt but creatively adapt and incorporate the references to make the content non-guessable while maintaining coherence.\n- If the Temperature is 1, fully incorporate the User Prompt into the new chapter.\n- For Temperature values between 0 and 1, adjust the influence of the User Prompt proportionally while ensuring the references are creatively integrated and remain consistent with the story.\n- Regardless of the Temperature value, avoid straying from the established narrative, theme, and storytelling style.\n- It should be in 250 words max.\n**Output Format:**\nReturn the output in JSON format with the following structure:\n{\n  "title": "{Chapter Title}",\n  "content": "{Chapter Content}"\n}',
+    //     },
+    //     {
+    //       role: "user",
+    //       content: `\`\`\`json\n{
+    //       "Story Theme": "${metadata.theme}",
+    //       "Narrative Style": "${metadata.storytellingStyle}",
+    //       "Temperature Value": ${random},
+    //       "Previous Chapters": ${previousChapters},
+    //       "Reference Materials": ${referenceChapters},
+    //       "User Prompt for the New Chapter": ${prompt}
+    //       }\`\`\``,
+    //     },
+    //   ],
+    //   response_format: {
+    //     type: "json_object",
+    //   },
+    //   temperature: 0.8,
+    //   max_completion_tokens: 4096,
+    //   top_p: 1,
+    //   frequency_penalty: 0,
+    //   presence_penalty: 0,
+    // });
 
-    let response: StoryContent = JSON.parse(
-      completion.choices[0].message.content || ""
-    );
+    // let response: StoryContent = JSON.parse(
+    //   completion.choices[0].message.content || ""
+    // );
 
-    await prisma.chapter.create({
-      data: {
-        title: response.title,
-        content: response.content,
-        metadataId: id,
-      },
-    });
+    // await prisma.chapter.create({
+    //   data: {
+    //     title: response.title,
+    //     content: response.content,
+    //     metadataId: id,
+    //   },
+    // });
 
-    res.status(200).json({ message: "Chapter generated!"});
+    // // IPFS upload metadata of the chapter
+    
+
+    // res.status(200).json({ message: "Chapter generated!"});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
