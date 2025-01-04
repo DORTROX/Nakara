@@ -12,6 +12,7 @@ interface DecodedToken {
 
 interface MetadataContentRequest {
   Name: string;
+  StoryName: string;
   "Manga Inspiration": string;
   image: string,
 }
