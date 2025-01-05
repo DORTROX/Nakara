@@ -17,8 +17,8 @@ model User {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
   username      String
   walletAddress String          @unique
+  metadata      StoryMetadata[]
   Comment       Comment[]
-  StoryMetadata StoryMetadata[]
 }
 
 model StoryMetadata {
@@ -28,12 +28,11 @@ model StoryMetadata {
   profile           String
   theme             String
   storytellingStyle String
-  chapters          Chapter[]
-  ListedStory       ListedStory[]
-  User              User          @relation(fields: [ownerId], references: [id])
   ownerId           String        @db.ObjectId
-  hash              String        @default("")        
-  // #HIMATODO: Create end
+  User              User          @relation(fields: [ownerId], references: [id])
+  chapters          Chapter[]
+  hash              String        @default("")
+  ListedStory       ListedStory[]
 }
 
 model Chapter {
@@ -42,8 +41,10 @@ model Chapter {
   content    String
   metadataId String        @db.ObjectId
   metadata   StoryMetadata @relation(fields: [metadataId], references: [id])
-  bet        Bet?
   createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  comments   Comment[]
+  bet        Bet?
 }
 
 model Bet {
@@ -51,19 +52,18 @@ model Bet {
   chapterId String    @unique @db.ObjectId
   chapter   Chapter   @relation(fields: [chapterId], references: [id])
   ques      String
-  answer    String
+  options   Json
   amount    Int
-  comments  Comment[]
 }
 
 model Comment {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  betId   String   @db.ObjectId
-  bet     Bet      @relation(fields: [betId], references: [id])
-  content String
-  author  String   @db.ObjectId
-  date    DateTime @default(now())
-  owner   User     @relation(fields: [author], references: [id])
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  author    String   @db.ObjectId
+  date      DateTime @default(now())
+  owner     User     @relation(fields: [author], references: [id])
+  Chapter   Chapter? @relation(fields: [chapterId], references: [id])
+  chapterId String?  @db.ObjectId
 }
 
 model ListedStory {

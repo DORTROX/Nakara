@@ -9,11 +9,10 @@ interface DecodedToken {
   [key: string]: any;
 }
 
-
 interface MetadataContentRequest {
   Name: string;
   "Manga Inspiration": string;
-  image: string,
+  image: string;
 }
 
 interface MetadataContent {
@@ -25,6 +24,15 @@ interface MetadataContent {
 interface StoryContent {
   content: string;
   title: string;
+  bet?: {
+    question: string;
+    options: BetOption[];
+  };
+}
+
+interface BetOption {
+  answer: string;
+  correct: boolean;
 }
 
 interface IPFSResponse {
