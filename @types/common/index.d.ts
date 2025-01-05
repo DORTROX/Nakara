@@ -25,4 +25,13 @@ interface MetadataContent {
 interface StoryContent {
   content: string;
   title: string;
+  bet?: {
+    question: string;
+    options: BetOption[];
+  };
+}
+
+interface BetOption {
+  answer: string;
+  correct: boolean;
 }

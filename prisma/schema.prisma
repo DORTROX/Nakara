@@ -34,31 +34,29 @@ model Metadata {
 }
 
 model Chapter {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   title      String
   content    String
-  metadataId String   @db.ObjectId
-  metadata   Metadata @relation(fields: [metadataId], references: [id])
-  bet        Bet?
-  createdAt  DateTime @default(now())
+  metadataId String    @db.ObjectId
+  metadata   Metadata  @relation(fields: [metadataId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  comments   Comment[]
 }
 
 model Bet {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  chapterId String    @unique @db.ObjectId
-  chapter   Chapter   @relation(fields: [chapterId], references: [id])
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  chapterId String @unique @db.ObjectId
   ques      String
-  answer    String
-  amount    Int
-  comments  Comment[]
+  options   Json
 }
 
 model Comment {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  betId   String   @db.ObjectId
-  bet     Bet      @relation(fields: [betId], references: [id])
-  content String
-  author  String   @db.ObjectId
-  date    DateTime @default(now())
-  owner   User     @relation(fields: [author], references: [id])
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  chapterId String   @db.ObjectId
+  bet       Chapter  @relation(fields: [chapterId], references: [id])
+  content   String
+  author    String   @db.ObjectId
+  date      DateTime @default(now())
+  owner     User     @relation(fields: [author], references: [id])
 }
