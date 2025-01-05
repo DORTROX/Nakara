@@ -4,14 +4,13 @@ function getAccessToken(): string {
     return process.env.WEB3_STORAGE_TOKEN || '';
 }
 
-async function uploadMetadata(metadata: Record<string, any>): Promise<void> {
+async function uploadMetadata(metadata: Record<string, any>): Promise<IPFSResponse> {
     const response = await lighthouse.uploadText(
         JSON.stringify(metadata),
         getAccessToken(),
         metadata.id
     )
-
-    console.log(response)
+    return response.data;
 }
 
 async function getMetadataInfo(metadataHash: string): Promise<Record<string, any>> {

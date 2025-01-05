@@ -12,12 +12,12 @@ interface DecodedToken {
 
 interface MetadataContentRequest {
   Name: string;
-  StoryName: string;
   "Manga Inspiration": string;
   image: string,
 }
 
 interface MetadataContent {
+  StoryName: string;
   Theme: string;
   Style: string;
 }
@@ -25,4 +25,10 @@ interface MetadataContent {
 interface StoryContent {
   content: string;
   title: string;
+}
+
+interface IPFSResponse {
+  Name: string;
+  Hash: string;
+  Size: string;
 }

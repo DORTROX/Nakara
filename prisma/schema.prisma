@@ -14,33 +14,36 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
   username      String
-  walletAddress String     @unique
-  metadata      Metadata[]
+  walletAddress String          @unique
   Comment       Comment[]
+  StoryMetadata StoryMetadata[]
 }
 
-model Metadata {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  storyName         String    @unique @default("Untitled Story")
+model StoryMetadata {
+  id                String        @id @default(auto()) @map("_id") @db.ObjectId
+  storyName         String        @unique @default("Untitled Story")
   characterName     String
   profile           String
   theme             String
   storytellingStyle String
-  ownerId           String    @db.ObjectId
-  owner             User      @relation(fields: [ownerId], references: [id])
   chapters          Chapter[]
+  ListedStory       ListedStory[]
+  User              User          @relation(fields: [ownerId], references: [id])
+  ownerId           String        @db.ObjectId
+  hash              String        @default("")        
+  // #HIMATODO: Create end
 }
 
 model Chapter {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
   title      String
   content    String
-  metadataId String   @db.ObjectId
-  metadata   Metadata @relation(fields: [metadataId], references: [id])
+  metadataId String        @db.ObjectId
+  metadata   StoryMetadata @relation(fields: [metadataId], references: [id])
   bet        Bet?
-  createdAt  DateTime @default(now())
+  createdAt  DateTime      @default(now())
 }
 
 model Bet {
@@ -61,4 +64,12 @@ model Comment {
   author  String   @db.ObjectId
   date    DateTime @default(now())
   owner   User     @relation(fields: [author], references: [id])
+}
+
+model ListedStory {
+  id       String        @id @default(auto()) @map("_id") @db.ObjectId
+  storyId  String        @db.ObjectId
+  story    StoryMetadata @relation(fields: [storyId], references: [id])
+  listedAt DateTime      @default(now())
+  pricing  Int
 }
