@@ -21,7 +21,6 @@ export const authenticateToken = (
     };
     next();
   } catch (err) {
-    console.log(err);
     res.status(400).json({ message: "An Error occurred" });
   }
 };

@@ -17,22 +17,27 @@ model User {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
   username      String
   walletAddress String          @unique
+  user_profile  String          @default("https://wallpapers-clan.com/wp-content/uploads/2022/07/anime-default-pfp-1.jpg")
   metadata      StoryMetadata[]
   Comment       Comment[]
+  bio           String          @default("Hi, I am a writer")
+  title         String          @default("Writer")
+  listedStory   ListedStory[]
 }
 
 model StoryMetadata {
-  id                String        @id @default(auto()) @map("_id") @db.ObjectId
-  storyName         String        @unique @default("Untitled Story")
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  storyName         String      @unique @default("Untitled Story")
   characterName     String
   profile           String
   theme             String
   storytellingStyle String
-  ownerId           String        @db.ObjectId
-  User              User          @relation(fields: [ownerId], references: [id])
+  ownerId           String      @db.ObjectId
+  User              User        @relation(fields: [ownerId], references: [id])
   chapters          Chapter[]
-  hash              String        @default("")
-  ListedStory       ListedStory[]
+  hash              String      @default("")
+  ListedStory       ListedStory?
+  ended             Boolean     @default(false)
 }
 
 model Chapter {
@@ -45,15 +50,28 @@ model Chapter {
   updatedAt  DateTime      @updatedAt
   comments   Comment[]
   bet        Bet?
+  locked     Boolean       @default(true)
 }
 
 model Bet {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  chapterId String    @unique @db.ObjectId
-  chapter   Chapter   @relation(fields: [chapterId], references: [id])
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  chapterId String        @unique @db.ObjectId
+  chapter   Chapter       @relation(fields: [chapterId], references: [id])
   ques      String
   options   Json
   amount    Int
+  createdAt DateTime      @default(now())
+  responses BetResponse[]
+  ended     Boolean       @default(false)
+}
+
+model BetResponse {
+  correct   Boolean
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  address   String   @unique
+  betId     String   @db.ObjectId
+  createdAt DateTime @default(now())
+  Bet       Bet      @relation(fields: [betId], references: [id])
 }
 
 model Comment {
@@ -68,8 +86,10 @@ model Comment {
 
 model ListedStory {
   id       String        @id @default(auto()) @map("_id") @db.ObjectId
-  storyId  String        @db.ObjectId
+  storyId  String        @unique @db.ObjectId
   story    StoryMetadata @relation(fields: [storyId], references: [id])
   listedAt DateTime      @default(now())
   pricing  Int
+  owner    String        @db.ObjectId
+  User     User          @relation(fields: [owner], references: [id])
 }
