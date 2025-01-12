@@ -81,3 +81,73 @@ export const GetComments = async (
   });
   res.status(200).json(comments);
 };
+
+
+export const GetProfile = async (
+  req: Request,
+  res: Response
+) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      walletAddress: req.user?.wallet,
+    },
+    select: {
+      user_profile: true,
+    }
+  });
+  
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  res.status(200).json(user);
+}
+
+export const GetUser = async (
+  req: Request,
+  res: Response
+) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      walletAddress: req.user?.wallet,
+    },
+    select: {
+      user_profile: true,
+      username: true,
+      id: true,
+      bio: true,
+      title: true,
+      premium: true,
+      _count: {
+        select: {
+          metadata: true,
+        },
+      },
+      metadata: {
+        select: {
+          id: true,
+          storyName: true,
+          ended: true,
+          ListedStory: {
+            select: {
+              pricing: true,
+              storyId: true,
+            },
+          },
+          _count: {
+            select: {
+              chapters: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+  res.status(200).json(user);
+}

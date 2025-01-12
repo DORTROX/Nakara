@@ -23,21 +23,22 @@ model User {
   bio           String          @default("Hi, I am a writer")
   title         String          @default("Writer")
   listedStory   ListedStory[]
+  premium       Boolean         @default(false)
 }
 
 model StoryMetadata {
-  id                String      @id @default(auto()) @map("_id") @db.ObjectId
-  storyName         String      @unique @default("Untitled Story")
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
+  storyName         String       @unique @default("Untitled Story")
   characterName     String
   profile           String
   theme             String
   storytellingStyle String
-  ownerId           String      @db.ObjectId
-  User              User        @relation(fields: [ownerId], references: [id])
+  ownerId           String       @db.ObjectId
+  User              User         @relation(fields: [ownerId], references: [id])
   chapters          Chapter[]
-  hash              String      @default("")
+  hash              String       @default("")
   ListedStory       ListedStory?
-  ended             Boolean     @default(false)
+  ended             Boolean      @default(false)
 }
 
 model Chapter {

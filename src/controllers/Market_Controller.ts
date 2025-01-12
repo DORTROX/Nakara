@@ -118,6 +118,7 @@ export const GetStory = async (req: Request, res: Response): Promise<void> => {
             username: true,
             bio: true,
             title: true,
+            walletAddress: true,
             _count: {
               select: {
                 metadata: true,
@@ -205,7 +206,8 @@ export const listStories = async (
     });
 
     res.status(200).json({ message: "Story listed successfully" });
-  } catch {
+  } catch  (err){
+    console.log(err)
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
